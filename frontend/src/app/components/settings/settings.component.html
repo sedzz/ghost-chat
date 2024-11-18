@@ -1,0 +1,105 @@
+<div class="min-h-screen bg-gray-900 text-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <header class="mb-8">
+        <span><button (click)="navigateHome()" class="absolute top-4 left-4 text-gray-400 hover:text-white">
+            <i class="fas fa-home text-2xl"></i>
+        </button></span>
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-3xl font-bold text-white">Configuración de la cuenta</h1>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <div class="bg-gray-800 border border-gray-700 rounded-lg shadow-lg overflow-hidden">
+                <div class="px-6 py-8">
+                    <h2 class="text-2xl font-semibold text-white mb-6">Información del usuario</h2>
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-4">
+                            <i class="lucide-user text-indigo-400 w-6 h-6"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-400">Nombre de usuario</p>
+                                <p class="text-lg text-white">{{user?.username}}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <i class="lucide-mail text-indigo-400 w-6 h-6"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-400">Email</p>
+                                <p class="text-lg text-white">{{user?.email}}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <i class="lucide-calendar text-indigo-400 w-6 h-6"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-400">Último inicio de sesión</p>
+                                <p class="text-lg text-white">{{user ? formatDate(user.last_login) : ''}}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <i class="lucide-calendar text-indigo-400 w-6 h-6"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-400">Fecha de registro</p>
+                                <p class="text-lg text-white">{{user ? formatDate(user.date_joined) : ''}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 border border-gray-700 rounded-lg shadow-lg overflow-hidden">
+                <div class="px-6 py-8">
+                    <h2 class="text-2xl font-semibold text-white mb-6">Cambiar contraseña</h2>
+                    <form class="space-y-6" (ngSubmit)="changePassword()" #passwordForm="ngForm">
+                        <div class="space-y-2">
+                            <label for="current-password" class="text-sm font-medium text-gray-400 block">Contraseña actual</label>
+                            <div class="relative">
+                                <input type="password" id="current-password" [(ngModel)]="currentPassword" name="currentPassword"
+                                    class="w-full bg-gray-700 border-gray-600 text-white rounded-lg pl-10 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="••••••••" required minlength="6" #currentPasswordInput="ngModel">
+                                <i class="lucide-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></i>
+                                <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white focus:outline-none">
+                                    <i class="lucide-eye w-5 h-5"></i>
+                                </button>
+                            </div>
+                            <div *ngIf="currentPasswordInput.invalid && (currentPasswordInput.dirty || currentPasswordInput.touched)" class="text-red-500 text-xs">
+                                <div *ngIf="currentPasswordInput.errors?.['required']">La contraseña actual es requerida.</div>
+                                <div *ngIf="currentPasswordInput.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="new-password" class="text-sm font-medium text-gray-400 block">Nueva contraseña</label>
+                            <div class="relative">
+                                <input type="password" id="new-password" [(ngModel)]="newPassword" name="newPassword"
+                                    class="w-full bg-gray-700 border-gray-600 text-white rounded-lg pl-10 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="••••••••" required minlength="6" #newPasswordInput="ngModel">
+                                <i class="lucide-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></i>
+                            </div>
+                            <div *ngIf="newPasswordInput.invalid && (newPasswordInput.dirty || newPasswordInput.touched)" class="text-red-500 text-xs">
+                                <div *ngIf="newPasswordInput.errors?.['required']">La nueva contraseña es requerida.</div>
+                                <div *ngIf="newPasswordInput.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="confirm-password" class="text-sm font-medium text-gray-400 block">Confirmar nueva contraseña</label>
+                            <div class="relative">
+                                <input type="password" id="confirm-password" [(ngModel)]="confirmPassword" name="confirmPassword"
+                                    class="w-full bg-gray-700 border-gray-600 text-white rounded-lg pl-10 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    placeholder="••••••••" required minlength="6" #confirmPasswordInput="ngModel">
+                                <i class="lucide-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></i>
+                            </div>
+                            <div *ngIf="confirmPasswordInput.invalid && (confirmPasswordInput.dirty || confirmPasswordInput.touched)" class="text-red-500 text-xs">
+                                <div *ngIf="confirmPasswordInput.errors?.['required']">Confirmar la nueva contraseña es requerido.</div>
+                                <div *ngIf="confirmPasswordInput.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</div>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" [disabled]="passwordForm.invalid">
+                            Cambiar contraseña
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            
+        </div>
+    </main>
+</div>

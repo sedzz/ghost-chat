@@ -1,0 +1,52 @@
+<div class="h-screen w-screen flex items-center justify-center">
+    <div class="chat-container bg-gray-700 shadow-lg rounded-lg w-full h-full max-w-none flex flex-col">
+        <div class="chat-header bg-gray-800 text-white p-4 flex justify-between items-center">
+            <span><button (click)="navigateHome()" class="absolute top-4 left-4 text-gray-400 hover:text-white">
+                <i class="fas fa-home text-2xl"></i>
+            </button></span>
+            <h2 class="text-xl font-semibold">{{roomName}}</h2>
+            <span class="text-sm">{{ user?.username }}</span>
+        </div>
+        <div #chatBody class="chat-body p-4 overflow-y-auto flex-1">
+            <div *ngFor="let message of messages" class="chat-message flex flex-col mb-4" [ngClass]="{'items-end': message.sender === user?.username, 'items-start': message.sender !== user?.username}">
+                <div class="p-3 rounded-lg inline-block max-w-[80%]" [ngClass]="{'bg-blue-500 text-white': message.sender === user?.username, 'bg-gray-200': message.sender !== user?.username}">
+                    <span *ngIf="message.sender !== user?.username" class="text-xs text-gray-500 block">{{ message.sender }}</span>
+                    <div class="flex justify-between items-center">
+                        <ng-container *ngIf="message.type === 'text'; else imageMessage">
+                            <p class="text-sm">{{ message.content }}</p>
+                        </ng-container>
+                        <ng-template #imageMessage>
+                            <img [src]="message.content" alt="Image" class="max-w-full h-auto chat-image" (click)="openModal(message.content)" style="cursor: pointer;">
+                        </ng-template>
+                        <span class="text-xs text-gray-400 ml-2">{{ message.timestamp | date: 'HH:mm' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="chat-footer p-4 bg-gray-700 rounded-b-lg">
+            <form class="flex space-x-2 justify-center" (submit)="sendMessage(message)">
+                <input type="text" 
+                       class="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 max-w-xs" 
+                       placeholder="Type your message..." 
+                       [(ngModel)]="message" 
+                       name="message"
+                       required>
+                <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" #fileInput>
+                <button type="button" (click)="fileInput.click()" class="p-2 bg-gray-300 rounded-lg hover:bg-gray-400">
+                    <i class="fas fa-paperclip"></i>
+                </button>
+                <button type="submit" class="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div *ngIf="isModalOpen" class="modal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <span class="close" (click)="closeModal()">&times;</span>
+        <img [src]="modalImage" alt="Image" class="modal-image">
+    </div>
+</div>

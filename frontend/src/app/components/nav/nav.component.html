@@ -1,0 +1,105 @@
+<nav class="bg-black shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex-shrink-0 flex items-center">
+        <a class="text-xl font-semibold text-white">GhostChat</a>
+
+        <!-- Primer desplegable -->
+        <div class="relative sm:ml-6" #dropdown>
+          <button (click)="toggleDropdown()"
+            class="flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+              fill="currentColor" aria-hidden="true">
+              <path
+                d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+            </svg>
+            <span class="ml-2 hidden sm:inline">Agregar amigo</span>
+          </button>
+
+          <div *ngIf="isDropdownOpen"
+            class="origin-top-right absolute right-0 mt-2 w-full sm:w-80 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+            role="menu" aria-orientation="vertical" aria-labelledby="add-people-menu">
+            <div class="py-1" role="none">
+              <form (ngSubmit)="onSubmit()" class="px-4 py-3">
+                <div class="mb-3">
+                  <input type="text" name="name" id="name" [(ngModel)]="userNickname"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 text-base sm:text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Name">
+                </div>
+                <button type="submit"
+                  class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base sm:text-sm font-medium text-black bg-white hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  Agregar
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center">
+        <!-- Segundo desplegable - Perfil -->
+        <div class="ml-4 relative">
+          <button (click)="toggleProfileDropdown()" class="flex items-center">
+            <span class="hidden sm:inline-block text-sm font-medium text-white mr-2">{{user?.username}}</span>
+            <div class="h-8 w-8 rounded-full flex items-center justify-center text-black font-bold"
+              [ngStyle]="{'background-color': profileColor}">
+              {{ profileInitial }}
+            </div>
+          </button>
+
+          <div *ngIf="isProfileDropdownOpen"
+            class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+            role="menu" aria-orientation="vertical" aria-labelledby="profile-menu">
+            <div class="py-1" role="none">
+              <a class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 flex items-center" role="menuitem" (click)="navigateToSettings()" style="cursor: pointer;">
+                <i class="fa-solid fa-cog mr-2"></i>Ajustes
+              </a>
+              <a class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 flex items-center" role="menuitem"
+                (click)="navigateToFriends()" style="cursor: pointer;">
+                <i class="fa-solid fa-user-friends mr-2"></i>Amigos
+              </a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 flex items-center" role="menuitem" (click)="logout()">
+                <i class="fa-solid fa-sign-out-alt mr-2"></i>Cerrar Sesion
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tercer desplegable - Notificaciones -->
+        <div class="ml-4 relative" (clickOutside)="closeDropdowns()">
+          <button (click)="toggleNotificationsDropdown()" class="flex items-center relative">
+            <i class="fa-regular fa-bell text-2xl" style="color: #ffffff;"></i>
+            <span *ngIf="notifications.length > 0"
+              class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{{notifications.length}}</span>
+          </button>
+
+          <div *ngIf="isNotificationsDropdownOpen"
+            class="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10 max-h-96 overflow-y-auto"
+            role="menu" aria-orientation="vertical" aria-labelledby="notifications-menu">
+            <div class="p-4 bg-gray-900 border-b flex justify-between items-center">
+              <h3 class="text-lg font-semibold text-gray-300">Notificaciones</h3>
+            </div>
+            <div *ngFor="let noti of notifications" (click)="markAsRead(noti.id)" class="py-2" role="none">
+              <div class="flex items-start px-4 py-3 hover:bg-gray-700 transition duration-150 ease-in-out" role="menuitem">
+                <div [ngClass]="{
+                  'bg-blue-200': noti.type === 'welcome',
+                  'bg-green-200': noti.type === 'friend',
+                  'bg-red-200': noti.type === 'chat_room'
+                }" class="flex-shrink-0 rounded-full p-2">
+                  <i *ngIf="noti.type === 'welcome'" class="fa-solid fa-hand-spock text-blue-500"></i>
+                  <i *ngIf="noti.type === 'friend'" class="fa-solid fa-user-group text-green-500"></i>
+                  <i *ngIf="noti.type === 'chat_room'" class="fa-solid fa-comments text-red-500"></i>
+                </div>
+                <div class="ml-3 flex-grow">
+                  <p class="text-xs text-gray-500">{{noti.message}}</p>
+                  <p class="text-xs text-gray-400 mt-1">{{noti.time}}</p>
+                </div>
+                <div class="ml-2 w-2 h-2 bg-red-500 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
