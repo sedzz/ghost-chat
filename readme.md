@@ -5,7 +5,7 @@
 La aplicación ha sido desarrollada utilizando **Django** y **Angular**, con el backend implementado como una API REST mediante **Django Rest Framework**.
 
 
-https://github.com/user-attachments/assets/83426658-3e6d-46fb-a556-ac1bd571d031
+https://github.com/user-attachments/assets/ff6b7d07-aeb0-4163-8a5d-4db4d3d1a079
 
 
 ## Características principales
